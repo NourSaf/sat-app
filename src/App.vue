@@ -7,9 +7,9 @@
 import api_app from './components/api_app.vue'
 
 const API_KEY = process.env.VUE_APP_API;
-const bbox = '19.59,49.90,20.33,50.21';
-const satellites = 'Sentinel-2A,Sentinel-2B';
-const API_URL = `https://api.spectator.earth/overpass/?bbox=${bbox}&satellites=${satellites}&api_key=${API_KEY}`;
+const API_URL = `https://api.spectator.earth/satellite/?api_key=${API_KEY}`;
+//Read this 
+//https://visualalchemist.in/2024/06/25/data-driven-art-inspiring-creativity-with-real-world-data/
 
 export default {
   name: 'App',
@@ -24,8 +24,8 @@ export default {
   },
   computed: {
     data_information(){
-      
      return console.log("MY DATA",this.sat_data)
+
     }
   },
   mounted(){
