@@ -1,17 +1,41 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  {{ data_information }}
+  <api_app/>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import api_app from './components/api_app.vue'
+
+const API_KEY = process.env.VUE_APP_API;
+const bbox = '19.59,49.90,20.33,50.21';
+const satellites = 'Sentinel-2A,Sentinel-2B';
+const API_URL = `https://api.spectator.earth/overpass/?bbox=${bbox}&satellites=${satellites}&api_key=${API_KEY}`;
 
 export default {
   name: 'App',
   components: {
-    HelloWorld
+    api_app
+  },
+  data(){
+    return{
+      sat_data: null
+    }
+
+  },
+  computed: {
+    data_information(){
+      
+     return console.log("MY DATA",this.sat_data)
+    }
+  },
+  mounted(){
+    fetch(API_URL)
+      .then((res) => res.json())
+      .then((data) =>{
+        this.sat_data = data;
+      });
   }
-}
+};
 </script>
 
 <style>
