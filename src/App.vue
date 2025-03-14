@@ -20,12 +20,10 @@ export default {
     return{
       sat_data: null
     }
-
   },
   computed: {
     data_information(){
      return console.log("MY DATA",this.sat_data)
-
     }
   },
   mounted(){
