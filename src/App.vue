@@ -29,7 +29,7 @@ export default {
       interval: null,
       message: '',
       coordinates_sat: '',
-      test_interval: null,
+      display_time: null,
       sat_cords:[]
     }
   },
@@ -48,7 +48,7 @@ export default {
       }, 
       2000);
     
-    this.test_interval = setInterval(() => {
+    this.display_time = setInterval(() => {
       this.message = new Date().toLocaleTimeString();
     }, 1000)
   },
@@ -69,7 +69,7 @@ export default {
   beforeUnmount(){
     clearInterval(this.interval);
     console.log("Interval Cleared");
-    clearInterval(this.test_interval);
+    clearInterval(this.display_time);
     console.log("interval cleared tested")
   }
 };
