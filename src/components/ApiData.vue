@@ -10,7 +10,8 @@
   
 <script>
   const API_KEY = process.env.VUE_APP_API;
-  const GEMI_API = process.env.VUE_GEMI_API;
+  // const GEMI_API = process.env.VUE_GEMI_API;
+  
   const API_URL = `https://api.spectator.earth/satellite/?api_key=${API_KEY}`;
   const { GoogleGenerativeAI } = require("@google/generative-ai");
   //Read this 
@@ -53,8 +54,8 @@
     coordinates_sat: {
       deep: true,
       handler(newCoords) {
-        if (newCoords[0] && newCoords[1]) {
-          this.prompt = `What is the satellite seeing from lattitude ${newCoords[0]} and longitude ${newCoords[1]}.`;
+        if (newCoords[0] && newCoords[1] && newCoords[2]) {
+          this.prompt = `Generate the satellites dream based of what the satellite is seeing from lattitude ${newCoords[0]}, longitude ${newCoords[1]} and altitude ${newCoords[3]}. Generate only the dream as a poem.`;
           this.sendToGemini();
         }
       },
@@ -75,7 +76,7 @@
 
       async sendToGemini(){
         try{
-          const genAI = new GoogleGenerativeAI(GEMI_API);
+          const genAI = new GoogleGenerativeAI("AIzaSyCZjHuMPr9JPA37ps8Gs1z3xgN9x3LGVB0");
           const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
           const result = await model.generateContent(this.prompt);
           const dream = result.response.text()
