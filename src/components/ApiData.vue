@@ -3,7 +3,6 @@
     <div>
     <h1>The Dreaming Sat</h1>
     <h3><strong>Current Locations:</strong> {{ coordinates_sat }}</h3>
-    <!-- <p><strong>Prompt:</strong> {{ prompt }}</p> -->
     <h3>Dream:</h3>
     <p>{{ geminiResponse }}</p>
   </div>
@@ -11,6 +10,7 @@
   
 <script>
   const API_KEY = process.env.VUE_APP_API;
+  const GEMI_API = process.env.VUE_GEMI_API;
   const API_URL = `https://api.spectator.earth/satellite/?api_key=${API_KEY}`;
   const { GoogleGenerativeAI } = require("@google/generative-ai");
   //Read this 
@@ -75,7 +75,7 @@
 
       async sendToGemini(){
         try{
-          const genAI = new GoogleGenerativeAI("AIzaSyCZjHuMPr9JPA37ps8Gs1z3xgN9x3LGVB0");
+          const genAI = new GoogleGenerativeAI(GEMI_API);
           const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
           const result = await model.generateContent(this.prompt);
           const dream = result.response.text()
