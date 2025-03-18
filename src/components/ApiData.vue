@@ -2,7 +2,8 @@
 
     <div>
     <h1>The Dreaming Sat</h1>
-    <h3><strong>Current Locations:</strong> {{ coordinates_sat }}</h3>
+    <h3>Current Locations:</h3>
+    <p> {{ coordinates_sat }}</p>
     <h3>Dream:</h3>
     <p>{{ geminiResponse }}</p>
   </div>
