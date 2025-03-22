@@ -1,8 +1,6 @@
 <template>
-    <div
-        v-for="key in responses"
-        :key="key"
-        class="pormpts">  
+    <div>
+        {{ response }}
     </div>
 </template>
 
@@ -11,14 +9,17 @@ export default {
     name: 'GeminiResponse',
     data() {
         return{
-
+            response: ''
         }
     },
     props: {
-        responses: Array
+        gemini_response: Array
     },
     methods:{
-
+        setResponse() {
+            this.response = this.gemini_response;
+            return this.response
+        }
     }
 };
 </script>
