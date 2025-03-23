@@ -22,7 +22,8 @@
 
     <div class="section">
       <h3>Sataletie image:</h3>
-      <img v-if="geminiImageUrl" :src="geminiImageUrl" alt="Image of the current satellite location" />
+
+      <img class="sat-image" v-if="geminiImageUrl" :src="geminiImageUrl" alt="Image of the current satellite location" />
       <p v-else>DREAMING...</p>
     </div>
   </div>
@@ -66,17 +67,18 @@ export default {
       handler(data){
         if (data[0].geometry.coordinates){
           console.log("This is Sat Name",data[0].geometry.coordinates[0])
-          const lat = data[0].geometry.coordinates[0];
-          const lon = data[0].geometry.coordinates[1];
+          const lon = data[0].geometry.coordinates[0];
+          const lat = data[0].geometry.coordinates[1];
           const alt = data[0].geometry.coordinates[2];
           const name = data[0].properties.name;
           const type = data[0].properties.senspr_type;
+          const swath = data[0].properties.swath;
 
-          this.prompt = `What is the place located at latitude ${lat}, longitude ${lon}? Provide only the name of the place. Be accurate`;
+          this.prompt = `What is the place located at latitude ${lat}, longitude ${lon} and swath of ${swath}? Provide only the name of the place. Be accurate`;
           this.dream_prompt = `This satellite ${name} is at ${lat}, ${lon} and have this sensor ${type}. Genrate a poem based on what the machine is dreaming about. Max 100 words. Return only the dream text without any extra explination`
           this.sendToGemini();
 
-          this.generateGeminiImage(lat, lon, alt);
+          this.generateGeminiImage(lat, lon, alt, swath);
         }
       }
     }
@@ -106,26 +108,14 @@ export default {
       }
     },
 
-    async generateGeminiImage(lat, lon, alt) {
+    async generateGeminiImage(lat, lon, alt, swath) {
       const imagePrompt = `
-        Generate an ultra-realistic, highly detailed satellite imagery scene similar 
-        to imagery captured by the ALOS-2 satellite, accurately reflecting 
-        real-time position data, 
-        including the satellite's current latitude ${lat}, longitude ${lon}, and altitude ${alt}. 
-        The image should always maintain a 1080 width by 1080px height ratio. 
-        Portray Earth's curvature distinctly, showcasing a dynamic 
-        position and perspective consistent with realistic orbital mechanics. 
-        Include the specific swath coverage of the satellite, emphasizing accurate and 
-        vivid geographical features such as terrain textures, cloud formations, 
-        oceanic currents, mountain ranges, rivers, urban centers, and vegetation 
-        patterns. The lighting should accurately depict natural sunlight 
-        conditions, highlighting realistic shadows and reflections based 
-        on the satellite's real-time location relative to 
-        Earth and the Sun. Capture authentic atmospheric effects, 
-        including the thin glowing blue line of Earth's atmosphere 
-        on the horizon, subtle atmospheric scattering, and accurate cloud shadows on land and sea surfaces. Ensure visual clarity, sharpness, and resolution comparable to genuine ALOS-2 satellite imagery. The imagery should evoke an authentic sense of real-time observation, suggesting the continuous changing position and swath coverage of the satellite in Earth's orbit.
+        Generate a high-resolution satellite image based on the current satellite position. 
+        The image should accurately reflect the real-time location at latitude ${lat}, longitude ${lon}, 
+        and altitude ${alt}. Include realistic geographical features such as terrain, water bodies, 
+        urban areas, and vegetation. With a resolution of 1080x1080 pixels. Highlight the satellite's 
+        swath coverage ${swath} and provide a visually accurate representation of the area as seen from orbit.
         `;
-
       const model = genAI.getGenerativeModel({
         model: "gemini-2.0-flash-exp-image-generation",
         generationConfig: {
@@ -201,6 +191,9 @@ img {
   .row-bg {
     padding: 10px 0;
     background-color: #f9fafc;
+  }
+  .sat-image{
+    filter: blur(4px);
   }
 
 </style>
