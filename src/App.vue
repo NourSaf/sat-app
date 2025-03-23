@@ -1,32 +1,21 @@
 <template>
   <div>
-    <el-row>
-      <el-col :span="24">
-        <div class="grid-content"> 
-          <h1>The Dreaming Sat</h1>
-        </div>
-        <div>
-        </div>
-    </el-col>
-    </el-row>
 
     <div class="section">
-
-      <h3 >CURRENT LOCATION</h3>
-      <div>{{ gemini_response }}</div>
-      
-      <h3> This is my Dream</h3>
-      <p>{{ dream_response }}</p>
-
+      <div>CURRENT LOCATION {{ gemini_response }}</div>
     </div>
 
-    <div class="section">
-      <h3>Sataletie image:</h3>
-
+    <div class="section img">      
       <img class="sat-image" v-if="geminiImageUrl" :src="geminiImageUrl" alt="Image of the current satellite location" />
       <p v-else>DREAMING...</p>
+      <div class="center-text">
+        
+        <p>I am dreaming of {{ dream_response }}</p>
+      </div>
     </div>
+
   </div>
+
 </template>
 
 <script>
@@ -69,7 +58,6 @@ export default {
           console.log("This is Sat Name",data[0].geometry.coordinates[0])
           const lon = data[0].geometry.coordinates[0];
           const lat = data[0].geometry.coordinates[1];
-          const alt = data[0].geometry.coordinates[2];
           const name = data[0].properties.name;
           const type = data[0].properties.senspr_type;
           const swath = data[0].properties.swath;
@@ -78,7 +66,7 @@ export default {
           this.dream_prompt = `This satellite ${name} is at ${lat}, ${lon} and have this sensor ${type}. Genrate a poem based on what the machine is dreaming about. Max 100 words. Return only the dream text without any extra explination`
           this.sendToGemini();
 
-          this.generateGeminiImage(lat, lon, alt, swath);
+          this.generateGeminiImage(lat, lon, swath);
         }
       }
     }
@@ -108,13 +96,17 @@ export default {
       }
     },
 
-    async generateGeminiImage(lat, lon, alt, swath) {
+    async generateGeminiImage(lat, lon, swath) {
       const imagePrompt = `
-        Generate a high-resolution satellite image based on the current satellite position. 
-        The image should accurately reflect the real-time location at latitude ${lat}, longitude ${lon}, 
-        and altitude ${alt}. Include realistic geographical features such as terrain, water bodies, 
-        urban areas, and vegetation. With a resolution of 1080x1080 pixels. Highlight the satellite's 
-        swath coverage ${swath} and provide a visually accurate representation of the area as seen from orbit.
+        Generate a highly realistic satellite image at a resolution of exactly 1080x1080 pixels, vividly capturing Earth's surface at the precise coordinates of Longitude: ${lon}, Latitude: ${lat}. The viewpoint should emulate that of a real-time Earth observation satellite orbiting directly overhead, clearly reflecting the satellite's current swath width coverage of approximately ${swath} kilometers.
+
+        Ensure the following details:
+        - Accurately depict natural terrain, including geological features, bodies of water, vegetation types, or urban landscapes corresponding precisely to these coordinates.
+        - Maintain logical realism consistent with satellite imagery: realistic atmospheric clarity, accurate color grading (natural colors), and appropriate shadowing based on sunlight direction relevant to the current time at the provided location.
+        - The perspective should be strictly top-down, perpendicular to Earth's surface, avoiding oblique or angled views.
+        - Include realistic cloud coverage only if typical and logical for the region at this moment; avoid exaggerated or unrealistic cloud formations.
+
+        This image must appear precisely representative of live satellite-captured visuals, suitable for real-time monitoring purposes and credible satellite data applications.
         `;
       const model = genAI.getGenerativeModel({
         model: "gemini-2.0-flash-exp-image-generation",
@@ -194,6 +186,20 @@ img {
   }
   .sat-image{
     filter: blur(4px);
+  }
+  .section .img{
+    position: relative;
+    text-align: center;
+  }
+
+  .center-text{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+  .sat-image{
+    width: 100%;
   }
 
 </style>
