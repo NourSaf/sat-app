@@ -1,19 +1,19 @@
 <template>
-  <div>
+  
+  <div class="main">
+      <div class="section-img">      
+        <img class="sat-image" :src="geminiImageUrl" alt="Image of the current satellite location" />
+        <div class="info-section">
+          <div class="title"> Satellite name <span class="sub-title">  {{ this.sat_name }} </span> </div>
+          <div class="title"> Satellite sensor <span class="sub-title">  {{ this.sensor_type }} </span> </div>
+          <div class="title"> Current Location <span class="sub-title"> {{ location_response }} </span></div>
+        </div>
 
-    <div class="section">
-      <div>CURRENT LOCATION {{ gemini_response }}</div>
-    </div>
-
-    <div class="section img">      
-      <img class="sat-image" v-if="geminiImageUrl" :src="geminiImageUrl" alt="Image of the current satellite location" />
-      <p v-else>DREAMING...</p>
-      <div class="center-text">
-        
-        <p>I am dreaming of {{ dream_response }}</p>
+        <div class="center-text">
+          <p v-if="dream_response">{{ dream_response }} </p>
+          <p v-else> Dreaming </p>
+        </div>
       </div>
-    </div>
-
   </div>
 
 </template>
@@ -32,16 +32,22 @@ export default {
       interval: null,
       coordinates_sat: '',
       dream_data:'',
-      gemini_response: '',
+      location_response: '',
       dream_response: '',
       geminiImageUrl: '',
       prompt: '',
       dream_prompt:'',
+      lon: '', 
+      lat: '',
+      alt: '',
+      sat_name:'',
+      sensor_type:'',
     };
   },
 
   mounted() {
     this.fetch_data();
+    
     this.interval = setInterval(() => {
       this.coordinates_sat = this.sat_data.features.map(d => d.geometry.coordinates);
       this.dream_data = this.sat_data.features.map(d => d)
@@ -56,17 +62,17 @@ export default {
       handler(data){
         if (data[0].geometry.coordinates){
           console.log("This is Sat Name",data[0].geometry.coordinates[0])
-          const lon = data[0].geometry.coordinates[0];
-          const lat = data[0].geometry.coordinates[1];
-          const name = data[0].properties.name;
-          const type = data[0].properties.senspr_type;
-          const swath = data[0].properties.swath;
+          this.lon = data[0].geometry.coordinates[0];
+          this.lat = data[0].geometry.coordinates[1];
+          this.sat_name = data[0].properties.name;
+          this.type = data[0].properties.senspr_type;
+          this.swath = data[0].properties.swath;
 
-          this.prompt = `What is the place located at latitude ${lat}, longitude ${lon} and swath of ${swath}? Provide only the name of the place. Be accurate`;
-          this.dream_prompt = `This satellite ${name} is at ${lat}, ${lon} and have this sensor ${type}. Genrate a poem based on what the machine is dreaming about. Max 100 words. Return only the dream text without any extra explination`
+          this.prompt = `What is the place located at latitude ${this.lat}, longitude ${this.lon} and swath of ${this.swath}? Provide only the name of the place. Be accurate. If you do not finde a plase return the nearest area to that location".`;
+          this.dream_prompt = `This satellite ${this.name} is at ${this.lat}, ${this.lon} and have this sensor ${this.type}. Genrate a poem based on what the machine is dreaming about. Max 100 words. Return only the dream text without any extra explination`
           this.sendToGemini();
 
-          this.generateGeminiImage(lat, lon, swath);
+          this.generateGeminiImage(this.lat, this.lon, this.swath);
         }
       }
     }
@@ -89,7 +95,7 @@ export default {
         const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
         const result = await model.generateContent(this.prompt);
         const drea_result = await model.generateContent(this.dream_prompt);
-        this.gemini_response = result.response.text();
+        this.location_response = result.response.text();
         this.dream_response = drea_result.response.text();
       } catch (error) {
         console.error("Gemini text generation error:", error);
@@ -146,60 +152,64 @@ export default {
 };
 </script>
 
-<style scoped>
-.section {
-  margin-top: 20px;
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Funnel+Display:wght@300..800&display=swap');
+
+
+body{
+  margin: 0;
+  padding: 0;
+  font-family: "Funnel Display", sans-serif;
+  color: black;
 }
 
 img {
   max-width: 100%;
-  border-radius: 8px;
-  border: 1px solid #ddd;
 }
 
-
-.el-row {
-  margin-bottom: 20px;
-  &:last-child {
-      margin-bottom: 0;
-    }
-  }
-  .el-col {
-    border-radius: 4px;
-  }
-  .bg-purple-dark {
-    background: #99a9bf;
-  }
-  .bg-purple {
-    background: #d3dce6;
-  }
-  .bg-purple-light {
-    background: #e5e9f2;
-  }
-  .grid-content {
-    border-radius: 4px;
-    min-height: 36px;
-  }
-  .row-bg {
-    padding: 10px 0;
-    background-color: #f9fafc;
-  }
-  .sat-image{
-    filter: blur(4px);
-  }
-  .section .img{
+.main{
+    height: 100vh;
+    width: 100vw;
     position: relative;
-    text-align: center;
-  }
+}
 
-  .center-text{
+.section-img{
+  height: 100vh;
+  width: 100vw;
+  position: fixed;
+}
+
+.sat-image{
+    filter: blur(4px);
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    background-color: black;
+    opacity: 0.5;
+}
+
+.info-section{
+  position: absolute;
+  top:20px;
+  left: 20px;
+
+}
+
+.title{
+  font-weight: 700;
+}
+
+.sub-title{
+  font-weight: 200;
+}
+.center-text{
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-  }
-  .sat-image{
-    width: 100%;
-  }
+    text-align: center;
+}
+
+
 
 </style>
