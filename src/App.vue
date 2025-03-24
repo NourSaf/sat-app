@@ -22,7 +22,7 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const API_KEY = process.env.VUE_APP_API;
-const genAI = new GoogleGenerativeAI("AIzaSyCZjHuMPr9JPA37ps8Gs1z3xgN9x3LGVB0");
+const genAI = new GoogleGenerativeAI("AIzaSyCH2jsmty34rFNcxzgjRqOBvhsJEmQJhiM");
 
 export default {
   name: 'App',
@@ -46,15 +46,21 @@ export default {
   },
 
   mounted() {
-    this.fetch_data();
-    
-    this.interval = setInterval(() => {
+    this.fetch_data().then(() => {
       this.coordinates_sat = this.sat_data.features.map(d => d.geometry.coordinates);
-      this.dream_data = this.sat_data.features.map(d => d)
-      console.log('This is dream data', this.dream_data)
-      this.fetch_data();
-    }, 15000);
+      this.dream_data = this.sat_data.features.map(d => d);
+      console.log('This is dream data', this.dream_data);
+    });
+
+    this.interval = setInterval(() => {
+      this.fetch_data().then(() => {
+        this.coordinates_sat = this.sat_data.features.map(d => d.geometry.coordinates);
+        this.dream_data = this.sat_data.features.map(d => d);
+        console.log('This is dream data', this.dream_data);
+      });
+    }, 25000);
   },
+  
 
   watch: {
     dream_data:{
@@ -182,7 +188,7 @@ img {
 }
 
 .sat-image{
-    filter: blur(4px);
+    filter: blur(6px);
     width: 100%;
     height: 100%;
     object-fit: cover;
@@ -194,7 +200,6 @@ img {
   position: absolute;
   top:20px;
   left: 20px;
-
 }
 
 .title{
@@ -204,14 +209,14 @@ img {
 .sub-title{
   font-weight: 200;
 }
+
 .center-text{
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     text-align: center;
+    font-size: 2em;
 }
-
-
 
 </style>
