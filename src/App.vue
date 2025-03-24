@@ -2,16 +2,16 @@
   
   <div class="main">
       <div class="section-img">      
-        <img class="sat-image" :src="geminiImageUrl" alt="Image of the current satellite location" />
+        <img class="sat-image" :src="geminiImageUrl"/>
         <div class="info-section">
-          <div class="title"> Satellite name <span class="sub-title">  {{ this.sat_name }} </span> </div>
-          <div class="title"> Satellite sensor <span class="sub-title">  {{ this.type }} </span> </div>
-          <div class="title"> Current Location <span class="sub-title"> {{ location_response }} </span></div>
+          <div class="title"> My name is Satellite <span class="sub-title">  {{ this.sat_name }} </span> </div>
+          <div class="title"> My sensor type is <span class="sub-title">  {{ this.type }} </span> </div>
+          <div class="title"> Now I am flying over <span class="sub-title"> {{ location_response }} </span></div>
         </div>
 
         <div class="center-text">
           <p v-if="dream_response">{{ dream_response }} </p>
-          <p v-else> Dreaming </p>
+          <p v-else> Wait I am dreaming... </p>
         </div>
       </div>
   </div>
