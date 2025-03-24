@@ -22,7 +22,7 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const API_KEY = process.env.VUE_APP_API;
-const genAI = new GoogleGenerativeAI("AIzaSyCH2jsmty34rFNcxzgjRqOBvhsJEmQJhiM");
+const genAI = new GoogleGenerativeAI("AIzaSyB9BNu7nzFQN0h2a3z-lBJCu8MiKQfQmL4");
 
 export default {
   name: 'App',
