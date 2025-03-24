@@ -5,7 +5,7 @@
         <img class="sat-image" :src="geminiImageUrl" alt="Image of the current satellite location" />
         <div class="info-section">
           <div class="title"> Satellite name <span class="sub-title">  {{ this.sat_name }} </span> </div>
-          <div class="title"> Satellite sensor <span class="sub-title">  {{ this.sensor_type }} </span> </div>
+          <div class="title"> Satellite sensor <span class="sub-title">  {{ this.type }} </span> </div>
           <div class="title"> Current Location <span class="sub-title"> {{ location_response }} </span></div>
         </div>
 
@@ -41,7 +41,7 @@ export default {
       lat: '',
       alt: '',
       sat_name:'',
-      sensor_type:'',
+      type:'',
     };
   },
 
@@ -62,13 +62,15 @@ export default {
       handler(data){
         if (data[0].geometry.coordinates){
           console.log("This is Sat Name",data[0].geometry.coordinates[0])
-          this.lon = data[0].geometry.coordinates[0];
-          this.lat = data[0].geometry.coordinates[1];
-          this.sat_name = data[0].properties.name;
-          this.type = data[0].properties.senspr_type;
-          this.swath = data[0].properties.swath;
+            const randomIndex = Math.floor(Math.random() * data.length);
+            this.lon = data[randomIndex].geometry.coordinates[0];
+            this.lat = data[randomIndex].geometry.coordinates[1];
+            this.sat_name = data[randomIndex].properties.name;
+            this.type = data[randomIndex].properties.modes[0].sensor_type;
+            this.swath = data[randomIndex].properties.modes[0].swath;
+            
 
-          this.prompt = `What is the place located at latitude ${this.lat}, longitude ${this.lon} and swath of ${this.swath}? Provide only the name of the place. Be accurate. If you do not finde a plase return the nearest area to that location".`;
+          this.prompt = `What is the place located at latitude ${this.lat}, longitude ${this.lon} and swath of ${this.swath}? Provide only the name of the place. Be accurate. If you do not finde a plase return the nearest area to that location and only the location "The nearest location is.."".`;
           this.dream_prompt = `This satellite ${this.name} is at ${this.lat}, ${this.lon} and have this sensor ${this.type}. Genrate a poem based on what the machine is dreaming about. Max 100 words. Return only the dream text without any extra explination`
           this.sendToGemini();
 
